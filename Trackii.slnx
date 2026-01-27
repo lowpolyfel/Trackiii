@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Trackii.API/Trackii.API.csproj" />
+  <Project Path="Trackii.Application/Trackii.Application.csproj" />
+  <Project Path="Trackii.Domain/Trackii.Domain.csproj" />
+  <Project Path="Trackii.Infrastructure/Trackii.Infrastructure.csproj" />
+  <Project Path="Trackii.Web/Trackii.Web.csproj" />
+</Solution>
