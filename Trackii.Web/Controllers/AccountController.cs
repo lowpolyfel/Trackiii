@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using Trackii.Application.Interfaces;
 using Trackii.Web.ViewModels.Account;
 
@@ -26,7 +23,6 @@ public sealed class AccountController : Controller
 
     [HttpPost]
     [AllowAnonymous]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model, CancellationToken ct)
     {
         if (!ModelState.IsValid)
@@ -39,23 +35,7 @@ public sealed class AccountController : Controller
                 model.Password,
                 ct);
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, result.UserId.ToString()),
-                new Claim(ClaimTypes.Name, result.Username),
-                new Claim(ClaimTypes.Role, result.RoleName)
-            };
-
-            var identity = new ClaimsIdentity(
-                claims,
-                CookieAuthenticationDefaults.AuthenticationScheme);
-
-            var principal = new ClaimsPrincipal(identity);
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                principal);
-
+            TempData["LoginMessage"] = $"Bienvenido, {result.Username}.";
             return RedirectToAction("Index", "Home");
         }
         catch (Exception ex)
@@ -66,13 +46,8 @@ public sealed class AccountController : Controller
     }
 
     [HttpPost]
-    [Authorize]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Logout()
+    public IActionResult Logout()
     {
-        await HttpContext.SignOutAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme);
-
         return RedirectToAction("Login", "Account");
     }
 
