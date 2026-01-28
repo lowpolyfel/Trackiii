@@ -4,31 +4,43 @@
     ViewData["Title"] = "Login";
 }
 
-<h2>Iniciar sesión</h2>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold mb-1">Iniciar sesión</h2>
+                        <p class="text-muted mb-0">Accede al lobby del sistema</p>
+                    </div>
 
-<form asp-action="Login" method="post">
+                    <form asp-action="Login" method="post">
+                        <div class="mb-3">
+                            <label asp-for="Username" class="form-label"></label>
+                            <input asp-for="Username" class="form-control form-control-lg" />
+                            <span asp-validation-for="Username" class="text-danger small"></span>
+                        </div>
 
-    <div class="form-group">
-        <label asp-for="Username"></label>
-        <input asp-for="Username" class="form-control" />
-        <span asp-validation-for="Username" class="text-danger"></span>
-    </div>
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" class="form-control form-control-lg" />
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
 
-    <div class="form-group">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
+                        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                        {
+                            <div class="alert alert-danger py-2 small">
+                                @Model.ErrorMessage
+                            </div>
+                        }
 
-    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
-    {
-        <div class="alert alert-danger">
-            @Model.ErrorMessage
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Entrar</button>
+                    </form>
+                </div>
+            </div>
         </div>
-    }
-
-    <button type="submit" class="btn btn-primary">Entrar</button>
-</form>
+    </div>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
