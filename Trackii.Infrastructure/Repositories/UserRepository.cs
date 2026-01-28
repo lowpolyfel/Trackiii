@@ -17,7 +17,7 @@ public sealed class UserRepository : IUserRepository
     public async Task<User?> GetByIdAsync(uint id, CancellationToken ct = default)
     {
         // Importante: NO filtramos por Active aquí.
-        // AuthService decide qué hacer si está inactivo.
+        // El controlador decide qué hacer si está inactivo.
         return await _db.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == id, ct);

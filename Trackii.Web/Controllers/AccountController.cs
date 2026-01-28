@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using System;
 using Trackii.Application.Interfaces;
 using Trackii.Web.ViewModels.Account;
 
@@ -10,11 +8,11 @@ namespace Trackii.Web.Controllers;
 
 public sealed class AccountController : Controller
 {
-    private readonly IAuthService _authService;
+    private readonly IUserRepository _userRepository;
 
-    public AccountController(IAuthService authService)
+    public AccountController(IUserRepository userRepository)
     {
-        _authService = authService;
+        _userRepository = userRepository;
     }
 
     [HttpGet]
@@ -26,7 +24,6 @@ public sealed class AccountController : Controller
 
     [HttpPost]
     [AllowAnonymous]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model, CancellationToken ct)
     {
         if (!ModelState.IsValid)
@@ -34,27 +31,24 @@ public sealed class AccountController : Controller
 
         try
         {
-            var result = await _authService.LoginAsync(
-                model.Username,
-                model.Password,
-                ct);
-
-            var claims = new List<Claim>
+            var user = await _userRepository.GetByUsernameAsync(model.Username, ct);
+            if (user is null)
             {
-                new Claim(ClaimTypes.NameIdentifier, result.UserId.ToString()),
-                new Claim(ClaimTypes.Name, result.Username),
-                new Claim(ClaimTypes.Role, result.RoleName)
-            };
+                model.ErrorMessage = "Usuario o contraseña incorrectos.";
+                return View(model);
+            }
 
-            var identity = new ClaimsIdentity(
-                claims,
-                CookieAuthenticationDefaults.AuthenticationScheme);
+            if (!user.Active)
+            {
+                model.ErrorMessage = "Usuario inactivo.";
+                return View(model);
+            }
 
-            var principal = new ClaimsPrincipal(identity);
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                principal);
+            if (!string.Equals(user.PasswordHash, model.Password, StringComparison.Ordinal))
+            {
+                model.ErrorMessage = "Usuario o contraseña incorrectos.";
+                return View(model);
+            }
 
             return RedirectToAction("Index", "Home");
         }
@@ -66,13 +60,8 @@ public sealed class AccountController : Controller
     }
 
     [HttpPost]
-    [Authorize]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Logout()
+    public IActionResult Logout()
     {
-        await HttpContext.SignOutAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme);
-
         return RedirectToAction("Login", "Account");
     }
 

@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Trackii.Application.Interfaces;
 using Trackii.Infrastructure.Persistence;
 using Trackii.Infrastructure.Repositories;
-using Trackii.Infrastructure.Services;
 
 namespace Trackii.Infrastructure;
 
@@ -36,9 +35,6 @@ public static class DependencyInjection
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IRouteRepository, RouteRepository>();
         services.AddScoped<IRouteStepRepository, RouteStepRepository>();
-
-        // Auth
-        services.AddScoped<IPasswordHasher, PasswordHasherAdapter>();
 
         return services;
     }
