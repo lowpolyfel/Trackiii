@@ -26,6 +26,7 @@ public sealed class PasswordHasherAdapter : IPasswordHasher
             providedPassword
         );
 
-        return result == PasswordVerificationResult.Success;
+        return result is PasswordVerificationResult.Success
+            or PasswordVerificationResult.SuccessRehashNeeded;
     }
 }
