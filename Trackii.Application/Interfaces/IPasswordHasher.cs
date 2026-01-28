@@ -1,0 +1,11 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+namespace Trackii.Application.Interfaces;
+
+public interface IPasswordHasher
+{
+    bool Verify(string hashedPassword, string providedPassword);
+}
